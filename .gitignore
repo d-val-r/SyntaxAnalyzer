@@ -2,6 +2,6 @@
 .settings/
 .project
 tests.cpp
-main.cpp
+in_class_main.cpp
 a.out
 codelexemes.txt

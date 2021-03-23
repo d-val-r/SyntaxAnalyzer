@@ -160,10 +160,10 @@ int SyntaxAnalyzer::vars(){
 
 bool SyntaxAnalyzer::stmtlist(){
     int result = stmt();
-
     while (result == 1){
     	result = stmt();
     }
+    cout << "The final result is: " << result << endl;
     if (result == 0)
         return false;
     else
@@ -229,7 +229,10 @@ bool SyntaxAnalyzer::ifstmt(){
 								{
 									tokitr++; lexitr++;
 									if (tokitr != tokens.end() && *tokitr == "t_if")
+									{
+										tokitr++; lexitr++;
 										return true;
+									}
 								}
 							}
 						}
@@ -334,20 +337,24 @@ bool SyntaxAnalyzer::outputstmt()
 {
 	if (tokitr != tokens.end() && *tokitr == "s_lparen")
 	{
+		cout << "passed l_paren" << endl;
 		tokitr++; lexitr++;
 		if (tokitr != tokens.end())
 		{
-			if (expr())
+			cout << "Passed not end" << endl;
+			if (*tokitr == "t_str")
 			{
-				tokitr++; lexitr++;
-			} else if (*tokitr == "t_str")
-			{
+				cout << "Found string" << endl;
 				tokitr++; lexitr++;
 
-			}
+			} else
+				return false;
 
 			if (tokitr != tokens.end() && *tokitr == "s_rparen")
+			{
+				tokitr++; lexitr++;
 				return true;
+			}
 		}
 	}	
 	
@@ -371,9 +378,10 @@ bool SyntaxAnalyzer::expr(){
 }
 
 bool SyntaxAnalyzer::simpleexpr()
-	// pre:
-	// post: 
-	// desc:
+	// pre: none
+	// post: source code has been checked for a valid simple expression
+	// desc: written by David Rudenya; assumes the expression is invalid
+	//       unless it passes all tests to be considered valid
 {
 	if (tokitr != tokens.end() && term())
 	{
@@ -462,7 +470,7 @@ std::istream& SyntaxAnalyzer::getline_safe(std::istream& input, std::string& out
 }
 
 int main(){
-    ifstream infile("codelexemes.txt");
+    ifstream infile("output.txt");
     if (!infile){
     	cout << "error opening lexemes.txt file" << endl;
         exit(-1);

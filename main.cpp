@@ -107,7 +107,7 @@ bool SyntaxAnalyzer::vdec(){
 	    return false;
 
     if (*tokitr != "t_var") 
-        return true;
+        return true; // do we increment tokitr past the empty set?
     else{
         tokitr++; lexitr++;
         int result = 0;   // 0 - valid, 1 - done, 2 - error
@@ -149,9 +149,16 @@ int SyntaxAnalyzer::vars(){
             else if (tokitr != tokens.end() && *tokitr == "s_semi"){
                 semihit = true;
                 tokitr++; lexitr++;
-
+		
 		// David Rudenya -- updated result to reflect hitting a semicolon
-		result = 1;
+		// and when there is another list of variables to check
+		if (tokitr != tokens.end() && (*tokitr == "t_string" || *tokitr == "t_integer"))
+		{
+			semihit = false;
+			tokitr++; lexitr++;
+		}
+		else 
+			result = 1;
             }
             else
                 result = 2;

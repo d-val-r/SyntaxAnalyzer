@@ -64,10 +64,9 @@ SyntaxAnalyzer::SyntaxAnalyzer(istream& infile){
 
 bool SyntaxAnalyzer::parse(){
     if (vdec()){
-        if (tokitr!=tokens.end() && *tokitr=="t_main"){ // the space looks like it's needed because, in the above method, we read up to, not including, the semicolon; the last character before a semicolon is the space
-
+        if (tokitr!=tokens.end() && *tokitr=="t_main"){ 
             tokitr++; lexitr++;
-            if (tokitr!=tokens.end() && stmtlist()){
+            if (tokitr!=tokens.end() && stmtlist()){ // let stmtlist() handle checking for .end()
             	if (tokitr!=tokens.end()) // should be at end token
                 	if (*tokitr == "t_end"){
                 		tokitr++; lexitr++;
@@ -103,8 +102,11 @@ bool SyntaxAnalyzer::parse(){
 }
 
 bool SyntaxAnalyzer::vdec(){
+    // David Rudenya - added a check to ensure that tokitr is not null
+    if (tokitr == tokens.end())
+	    return false;
 
-    if (*tokitr != "t_var")
+    if (*tokitr != "t_var") 
         return true;
     else{
         tokitr++; lexitr++;
@@ -390,7 +392,6 @@ bool SyntaxAnalyzer::simpleexpr()
 		{	
 			if (arithop() || relop())	
 			{
-				tokitr++; lexitr++;
 				if (tokitr != tokens.end() && term())
 				{
 					tokitr++; lexitr++;
@@ -423,7 +424,8 @@ bool SyntaxAnalyzer::term(){
 }
 
 bool SyntaxAnalyzer::logicop(){
-    if ((*tokitr == "s_and") || (*tokitr == "s_or")){
+    // David Rudenya -- added a check to ensure tokitr is not null
+    if (tokitr != tokens.end() && ((*tokitr == "s_and") || (*tokitr == "s_or"))){
         tokitr++; lexitr++;
         return true;
     }
@@ -432,8 +434,9 @@ bool SyntaxAnalyzer::logicop(){
 }
 
 bool SyntaxAnalyzer::arithop(){
-    if ((*tokitr == "s_mult") || (*tokitr == "s_plus") || (*tokitr == "s_minus")
-        || (*tokitr == "s_div")	|| (*tokitr == "s_mod")){
+    // David Rudenya -- added check to ensure tokitr is not null
+    if (tokitr != tokens.end() &&  ((*tokitr == "s_mult") || (*tokitr == "s_plus") || (*tokitr == "s_minus")
+        || (*tokitr == "s_div")	|| (*tokitr == "s_mod"))){
         tokitr++; lexitr++;
         return true;
     }
@@ -442,8 +445,9 @@ bool SyntaxAnalyzer::arithop(){
 }
 
 bool SyntaxAnalyzer::relop(){
-    if ((*tokitr == "s_lt") || (*tokitr == "s_gt") || (*tokitr == "s_ge")
-        || (*tokitr == "s_eq") || (*tokitr == "s_ne") || (*tokitr == "s_le")){
+    // David Rudenya -- added check to ensure tokitr != tokens.end()
+    if (tokitr != tokens.end() &&  ((*tokitr == "s_lt") || (*tokitr == "s_gt") || (*tokitr == "s_ge")
+        || (*tokitr == "s_eq") || (*tokitr == "s_ne") || (*tokitr == "s_le"))){
         tokitr++; lexitr++;
         return true;
     }

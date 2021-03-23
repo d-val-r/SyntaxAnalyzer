@@ -163,7 +163,6 @@ bool SyntaxAnalyzer::stmtlist(){
     while (result == 1){
     	result = stmt();
     }
-    cout << "The final result is: " << result << endl;
     if (result == 0)
         return false;
     else
@@ -337,15 +336,14 @@ bool SyntaxAnalyzer::outputstmt()
 {
 	if (tokitr != tokens.end() && *tokitr == "s_lparen")
 	{
-		cout << "passed l_paren" << endl;
 		tokitr++; lexitr++;
 		if (tokitr != tokens.end())
 		{
-			cout << "Passed not end" << endl;
-			if (*tokitr == "t_str")
+			if (*tokitr == "t_str" || expr()) // expr() needs to be checked SECOND because it updates the tokitr
 			{
-				cout << "Found string" << endl;
-				tokitr++; lexitr++;
+				tokitr++; lexitr++; // if expr() increments this too, should expr() have its version of this conditional?
+				// i.e: if it was an expression, then expr() increments to the s_rparen, and then this increment moves us
+				// pas that, skipping the character
 
 			} else
 				return false;
@@ -386,19 +384,18 @@ bool SyntaxAnalyzer::simpleexpr()
 	if (tokitr != tokens.end() && term())
 	{
 		tokitr++; lexitr++;
-		if (tokitr == tokens.end()) // make sure that having an empty set actually constitutes hitting the end
-		      return true;
-		
-		if (arithop())	
-		{
-			tokitr++; lexitr++;
-			if (tokitr != tokens.end() && term())
-				return true;
-		} else if (relop())
-		{
-			tokitr++; lexitr++;
-			if (tokitr != tokens.end() && term())
-				return true;
+		if (tokitr != tokens.end()) 
+		{	
+			if (arithop() || relop())	
+			{
+				tokitr++; lexitr++;
+				if (tokitr != tokens.end() && term())
+				{
+					tokitr++; lexitr++;
+					return true;
+				} else
+					return false;
+			} 
 		}
 	}
 	return false;

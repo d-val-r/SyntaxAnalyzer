@@ -370,9 +370,30 @@ bool SyntaxAnalyzer::expr(){
     }
 }
 
-bool SyntaxAnalyzer::simpleexpr(){
-	return true;
-    // write this function
+bool SyntaxAnalyzer::simpleexpr()
+	// pre:
+	// post: 
+	// desc:
+{
+	if (tokitr != tokens.end() && term())
+	{
+		tokitr++; lexitr++;
+		if (tokitr == tokens.end()) // make sure that having an empty set actually constitutes hitting the end
+		      return true;
+		
+		if (arithop())	
+		{
+			tokitr++; lexitr++;
+			if (tokitr != tokens.end() && term())
+				return true;
+		} else if (relop())
+		{
+			tokitr++; lexitr++;
+			if (tokitr != tokens.end() && term())
+				return true;
+		}
+	}
+	return false;
 }
 
 bool SyntaxAnalyzer::term(){

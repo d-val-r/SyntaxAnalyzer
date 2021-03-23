@@ -201,10 +201,10 @@ int SyntaxAnalyzer::stmt(){  // returns 1 or 2 if valid, 0 if invalid
 }
 
 bool SyntaxAnalyzer::ifstmt(){ 
-	// do only our Boolean operator produce Booleans?
-	// or can we have something like "output" return a Bool, like how
-	// file does?
-	
+	// pre: none
+	// post: the source code has been analyzed for a valid if-statement
+	// 	 returns true if valid; false if not
+	// desc: David Rudenya's version of the method, not the in-class one	
 	if (tokitr != tokens.end())
 	{
 		if (*tokitr == "s_lparen")
@@ -212,6 +212,7 @@ bool SyntaxAnalyzer::ifstmt(){
 			tokitr++; lexitr++;
 			if (tokitr != tokens.end() && expr())
 			{
+				tokitr++; lexitr++;
 				if (tokitr != tokens.end() && *tokitr == "s_rparen")
 				{
 					tokitr++; lexitr++;
@@ -240,7 +241,6 @@ bool SyntaxAnalyzer::ifstmt(){
 	}	
 
 	return false;
-    // we will write this together in class
 }
 
 bool SyntaxAnalyzer::elsepart(){
@@ -254,14 +254,59 @@ bool SyntaxAnalyzer::elsepart(){
     return true;   // elsepart can be null
 }
 
-bool SyntaxAnalyzer::whilestmt(){
-	return true;
-	// write this function
+bool SyntaxAnalyzer::whilestmt()
+	// pre: none
+	// post: source code analyzed for a valid while-statement
+	// desc: written by David Rudenya; assumes invalid statement unless
+	//       conditions to be a valid while-statement are met
+{
+	if (tokitr != tokens.end() && *tokitr == "s_lparen")
+	{
+		tokitr++; lexitr++;
+		if (tokitr != tokens.end() && expr())
+		{
+			tokitr++; lexitr++;
+			if (tokitr != tokens.end() && *tokitr == "s_rparen")
+			{
+				tokitr++; lexitr++;
+				if (tokitr != tokens.end() && *tokitr == "t_loop")
+				{
+					tokitr++; lexitr++;
+					if (tokitr != tokens.end() && stmtlist())
+					{
+						tokitr++; lexitr++;
+						if (tokitr != tokens.end() && *tokitr == "t_end")
+						{
+							tokitr++; lexitr++;
+							if (tokitr != tokens.end() && *tokitr == "t_loop")
+								return true;
+						}
+					}
+				}
+			}
+		}
+	}
+	return false;
 }
 
-bool SyntaxAnalyzer::assignstmt(){
-	return true;
-    // write this function
+bool SyntaxAnalyzer::assignstmt()
+	// pre: none
+	// post: the source code has been checked for a valid assignment statement
+	//       returns true if valid; false if not
+	// desc: written by David Rudenya; assumes the statement is not valid
+	//       unless it meets all requirements to be valid
+{
+	if (tokitr != tokens.end() && *tokitr == "t_id")
+	{
+		tokitr++; lexitr++;
+		if (tokitr != tokens.end() && *tokitr == "s_assign")
+		{
+			tokitr++; lexitr++;
+			if (tokitr != tokens.end() && expr())
+				return true;
+		}
+	}
+	return false;
 }
 bool SyntaxAnalyzer::inputstmt(){
     if (*tokitr == "s_lparen"){

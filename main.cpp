@@ -114,7 +114,7 @@ bool SyntaxAnalyzer::vdec(){
         result = vars();
         if (result == 2)
             return false;
-        while (result == 0){
+        while (result == 0){ // maybe include the if in the while condition?
             if (tokitr!=tokens.end())
                 result = vars(); // parse vars
         }
@@ -137,7 +137,7 @@ int SyntaxAnalyzer::vars(){
         temp = "t_string";
         tokitr++; lexitr++;
     }
-    else // presumably, we ran out of types to check; but what if it was an invalid type? 
+    else 
         return 1;
     bool semihit = false;
     while (tokitr != tokens.end() && result == 0 && !semihit){
@@ -149,6 +149,9 @@ int SyntaxAnalyzer::vars(){
             else if (tokitr != tokens.end() && *tokitr == "s_semi"){
                 semihit = true;
                 tokitr++; lexitr++;
+
+		// David Rudenya -- updated result to reflect hitting a semicolon
+		result = 1;
             }
             else
                 result = 2;

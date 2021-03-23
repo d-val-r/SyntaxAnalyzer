@@ -339,15 +339,17 @@ bool SyntaxAnalyzer::outputstmt()
 		tokitr++; lexitr++;
 		if (tokitr != tokens.end())
 		{
-			if (*tokitr == "t_str" || expr()) // expr() needs to be checked SECOND because it updates the tokitr
+			if (*tokitr == "t_str") 
 			{
-				tokitr++; lexitr++; // if expr() increments this too, should expr() have its version of this conditional?
-				// i.e: if it was an expression, then expr() increments to the s_rparen, and then this increment moves us
-				// pas that, skipping the character
-
-			} else
+				tokitr++; lexitr++; 
+			} 
+			// expr() updates the tokitr/lexitr, but if it returns false, immediately exit the function
+			else if (!expr()) 
 				return false;
 
+
+			// if the program reaches this point, either a valid string
+			// or expression was found
 			if (tokitr != tokens.end() && *tokitr == "s_rparen")
 			{
 				tokitr++; lexitr++;

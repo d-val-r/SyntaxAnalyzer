@@ -303,7 +303,11 @@ bool SyntaxAnalyzer::assignstmt()
 		{
 			tokitr++; lexitr++;
 			if (tokitr != tokens.end() && expr())
-				return true;
+			{
+				tokitr++; lexitr++;
+				if (tokitr != tokens.end() && *tokitr == "s_semi")
+					return true;
+			}
 		}
 	}
 	return false;
@@ -322,9 +326,32 @@ bool SyntaxAnalyzer::inputstmt(){
     return false;
 }
 
-bool SyntaxAnalyzer::outputstmt(){
-	return true;
-	// write this function
+bool SyntaxAnalyzer::outputstmt()
+	// pre: none
+	// post: the source code has been checked for a valid output statement
+	// desc: written by David Rudenya; assumes the output statement is
+	//       invalid unless it passes all tests to be valid
+{
+	if (tokitr != tokens.end() && *tokitr == "s_lparen")
+	{
+		tokitr++; lexitr++;
+		if (tokitr != tokens.end())
+		{
+			if (expr())
+			{
+				tokitr++; lexitr++;
+			} else if (*tokitr == "t_str")
+			{
+				tokitr++; lexitr++;
+
+			}
+
+			if (tokitr != tokens.end() && *tokitr == "s_rparen")
+				return true;
+		}
+	}	
+	
+	return false;
 }
 
 bool SyntaxAnalyzer::expr(){

@@ -222,8 +222,7 @@ bool SyntaxAnalyzer::ifstmt(){
 		{
 			tokitr++; lexitr++;
 			if (tokitr != tokens.end() && expr())
-			{
-				tokitr++; lexitr++;
+			{ 
 				if (tokitr != tokens.end() && *tokitr == "s_rparen")
 				{
 					tokitr++; lexitr++;
@@ -232,7 +231,9 @@ bool SyntaxAnalyzer::ifstmt(){
 						tokitr++; lexitr++;
 						if (tokitr != tokens.end() && stmtlist())
 						{
+							cout << "HERE" << *tokitr << endl; // "end" in "end if"
 							tokitr++; lexitr++;
+							cout << "HERE" << *tokitr << endl; // "if" in "end if"
 							if (tokitr != tokens.end() && elsepart())
 							{
 								tokitr++; lexitr++;
@@ -279,7 +280,6 @@ bool SyntaxAnalyzer::whilestmt()
 		tokitr++; lexitr++;
 		if (tokitr != tokens.end() && expr())
 		{
-			tokitr++; lexitr++;
 			if (tokitr != tokens.end() && *tokitr == "s_rparen")
 			{
 				tokitr++; lexitr++;
@@ -288,12 +288,14 @@ bool SyntaxAnalyzer::whilestmt()
 					tokitr++; lexitr++;
 					if (tokitr != tokens.end() && stmtlist())
 					{
-						tokitr++; lexitr++;
 						if (tokitr != tokens.end() && *tokitr == "t_end")
 						{
 							tokitr++; lexitr++;
 							if (tokitr != tokens.end() && *tokitr == "t_loop")
+							{
+								tokitr++; lexitr++;
 								return true;
+							}
 						}
 					}
 				}
@@ -320,7 +322,10 @@ bool SyntaxAnalyzer::assignstmt()
 			{
 				tokitr++; lexitr++;
 				if (tokitr != tokens.end() && *tokitr == "s_semi")
+				{
+					tokitr++; lexitr++;
 					return true;
+				}
 			}
 		}
 	}
@@ -386,6 +391,7 @@ bool SyntaxAnalyzer::expr(){
     }
     else{
 	return false;
+
     }
 }
 
@@ -395,40 +401,46 @@ bool SyntaxAnalyzer::simpleexpr()
 	// desc: written by David Rudenya; assumes the expression is invalid
 	//       unless it passes all tests to be considered valid
 {
-	if (tokitr != tokens.end() && term())
+	if (term())
 	{
-		tokitr++; lexitr++;
-		if (tokitr != tokens.end()) 
+		if (tokitr != tokens.end() && (arithop() || relop())) 
 		{	
-			if (arithop() || relop())	
+			
+			if (tokitr != tokens.end() && term())
 			{
-				if (tokitr != tokens.end() && term())
-				{
-					tokitr++; lexitr++;
-					return true;
-				} else
-					return false;
-			} 
+				// tokitr++; lexitr++;
+				// need to remove this; term() increments for us
+				return true;
+			} else
+				return false;
+			 
+		} else
+		{
+			tokitr++; lexitr++;
+			return true;
 		}
 	}
 	return false;
 }
 
 bool SyntaxAnalyzer::term(){
-    if ((*tokitr == "t_int")
+    // David Rudenya - added a check to ensure tokitr is not null
+    if (tokitr != tokens.end() && (
+        (*tokitr == "t_int")
 	|| (*tokitr == "t_str")
-	|| (*tokitr == "t_id")){
+	|| (*tokitr == "t_id"))){
     	tokitr++; lexitr++;
     	return true;
     }
-    else
-        if (*tokitr == "s_lparen"){
+    else if (*tokitr == "s_lparen"){
             tokitr++; lexitr++;
             if (expr())
+	    { // David Rudenya -- added open/close brackets
                 if (*tokitr == "s_rparen"){
                     tokitr++; lexitr++;
                     return true;
                 }
+	    }
         }
     return false;
 }

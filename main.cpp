@@ -291,7 +291,7 @@ bool SyntaxAnalyzer::whilestmt()
 				if (tokitr != tokens.end() && *tokitr == "t_loop")
 				{
 					tokitr++; lexitr++;
-					if (tokitr != tokens.end() && stmtlist())
+					if (stmtlist())
 					{
 						if (tokitr != tokens.end() && *tokitr == "t_end")
 						{
@@ -317,7 +317,7 @@ bool SyntaxAnalyzer::assignstmt()
 	// desc: written by David Rudenya; assumes the statement is not valid
 	//       unless it meets all requirements to be valid
 {
-	if (tokitr != tokens.end() && *tokitr == "t_id")
+	if (tokitr != tokens.end() && *tokitr == "s_assign")
 	{
 		tokitr++; lexitr++;
 		if (tokitr != tokens.end() && *tokitr == "s_assign")

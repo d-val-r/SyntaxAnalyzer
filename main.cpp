@@ -107,7 +107,7 @@ bool SyntaxAnalyzer::vdec(){
 	    return false;
 
     if (*tokitr != "t_var") 
-        return true; // do we increment tokitr past the empty set?
+        return true; 
     else{
         tokitr++; lexitr++;
         int result = 0;   // 0 - valid, 1 - done, 2 - error
@@ -184,16 +184,9 @@ bool SyntaxAnalyzer::stmtlist(){
 int SyntaxAnalyzer::stmt(){  // returns 1 or 2 if valid, 0 if invalid
 	if (*tokitr == "t_if"){
         tokitr++; lexitr++;
-        if (ifstmt())  // the if statement is returning 0 and screwing up stmtlist()
-	{
-		cout << "IF STATEMENT RETURNING 1" << endl;
-		return 1;
-	}
-        else 
-	{
-		cout << "IF STATEMENT RETURNING 0" << endl;
-		return 0;
-	}
+        if (ifstmt()) return 1;
+	else return 0;
+	
     }
     else if (*tokitr == "t_while"){
         tokitr++; lexitr++;
@@ -214,16 +207,8 @@ int SyntaxAnalyzer::stmt(){  // returns 1 or 2 if valid, 0 if invalid
     else if (*tokitr == "t_output"){
         tokitr++; lexitr++;
         cout << "t_output" << endl;
-        if (outputstmt()) 
-	{
-		cout << "OUTPUT RETURNING 1" << endl;
-		return 1;
-	}
-        else 
-	{
-		cout << "OUTPUT RETURNING 0" << endl;
-		return 0;
-	}
+        if (outputstmt()) return 1;
+	else return 0;
     }
     return 2;  //stmtlist can be null
 }
@@ -246,20 +231,15 @@ bool SyntaxAnalyzer::ifstmt(){
 					if (tokitr != tokens.end() && *tokitr == "t_then")
 					{
 						tokitr++; lexitr++;
-						cout << "PRE STMTLIST()" << *tokitr << endl;
 						if (tokitr != tokens.end() && stmtlist())
 						{
-							cout <<"AFTER STMTLIST()" <<  *tokitr << endl; // this stopped at the first end
 							if (tokitr != tokens.end() && elsepart())
 							// the methods called by elsepart() will increment if necessary; otherwise, if
 							// elsepart() is just empty, don't increment
 							{
 								if (tokitr != tokens.end() && *tokitr == "t_end")
 								{
-									cout << "made it here" << endl;
-									cout << *tokitr << endl;
 									tokitr++; lexitr++;
-									cout << "END?!" << (tokitr == tokens.end()) << endl; // this is the FINAL end
 									if (tokitr != tokens.end() && *tokitr == "t_if")
 									{
 										tokitr++; lexitr++;
@@ -389,7 +369,6 @@ bool SyntaxAnalyzer::outputstmt()
 			// or expression was found
 			if (tokitr != tokens.end() && *tokitr == "s_rparen")
 			{
-				cout << "WE'RE RETURNING TRUE" << *tokitr << endl;
 				tokitr++; lexitr++;
 				return true;
 			}

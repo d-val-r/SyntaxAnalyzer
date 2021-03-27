@@ -51,8 +51,8 @@ SyntaxAnalyzer::SyntaxAnalyzer(istream& infile){
     bool valid = true;
     while(!infile.eof() && (valid)){ // valid never updated in this loop?
         pos = line.find(":");
-        tok = line.substr(0, pos-1); // changed from pos to pos-1 to account for the space
-        lex = line.substr(pos+1, line.length());
+        tok = line.substr(0, pos-1); // changed from pos to pos-1 to account for the space MAKE SURE TO CHANGE THIS BACK
+        lex = line.substr(pos+1, line.length()); // HERE TOO!
         cout << pos << " " << tok << " " << lex << endl;
         tokens.push_back(tok);
         lexemes.push_back(lex);
@@ -66,7 +66,8 @@ bool SyntaxAnalyzer::parse(){
     if (vdec()){
         if (tokitr!=tokens.end() && *tokitr=="t_main"){ 
             tokitr++; lexitr++;
-            if (tokitr!=tokens.end() && stmtlist()){ // let stmtlist() handle checking for .end()
+	    // David Rudenya -- removed redundant null iterator check
+            if (stmtlist()){ 
             	if (tokitr!=tokens.end()) // should be at end token
                 	if (*tokitr == "t_end"){
                 		tokitr++; lexitr++;
@@ -106,7 +107,7 @@ bool SyntaxAnalyzer::vdec(){
     if (tokitr == tokens.end())
 	    return false;
 
-    if (*tokitr != "t_var") 
+    if (*tokitr != "t_var") // vdec can be null
         return true; 
     else{
         tokitr++; lexitr++;
@@ -115,7 +116,7 @@ bool SyntaxAnalyzer::vdec(){
         if (result == 2)
             return false;
         while (result == 0){ // maybe include the if in the while condition?
-            if (tokitr!=tokens.end())
+            if (tokitr!=tokens.end()) // the entirety of this loop might be unnecessary; vars() looks for ALL variables
                 result = vars(); // parse vars
         }
 
@@ -138,7 +139,7 @@ int SyntaxAnalyzer::vars(){
         tokitr++; lexitr++;
     }
     else 
-        return 1;
+        return 1; // what if we run into non-id terms?
     bool semihit = false;
     while (tokitr != tokens.end() && result == 0 && !semihit){
         if (*tokitr == "t_id"){
@@ -182,6 +183,10 @@ bool SyntaxAnalyzer::stmtlist(){
         return true;
 }
 int SyntaxAnalyzer::stmt(){  // returns 1 or 2 if valid, 0 if invalid
+	// David Rudenya -- added check to ensure tokitr is not null
+	if (tokitr == tokens.end())
+		return false;
+
 	if (*tokitr == "t_if"){
         tokitr++; lexitr++;
         if (ifstmt()) return 1;
@@ -223,7 +228,7 @@ bool SyntaxAnalyzer::ifstmt(){
 		if (*tokitr == "s_lparen")
 		{
 			tokitr++; lexitr++;
-			if (tokitr != tokens.end() && expr()) // let expr() handle the .end() check
+			if (expr()) 
 			{ 
 				if (tokitr != tokens.end() && *tokitr == "s_rparen")
 				{
@@ -278,7 +283,7 @@ bool SyntaxAnalyzer::whilestmt()
 	if (tokitr != tokens.end() && *tokitr == "s_lparen")
 	{
 		tokitr++; lexitr++;
-		if (tokitr != tokens.end() && expr())
+		if (expr())
 		{
 			if (tokitr != tokens.end() && *tokitr == "s_rparen")
 			{
@@ -320,7 +325,6 @@ bool SyntaxAnalyzer::assignstmt()
 			tokitr++; lexitr++;
 			if (tokitr != tokens.end() && expr())
 			{
-				tokitr++; lexitr++;
 				if (tokitr != tokens.end() && *tokitr == "s_semi")
 				{
 					tokitr++; lexitr++;
@@ -403,20 +407,17 @@ bool SyntaxAnalyzer::simpleexpr()
 {
 	if (term())
 	{
-		if (tokitr != tokens.end() && (arithop() || relop())) 
+		if (arithop() || relop())
 		{	
 			
-			if (tokitr != tokens.end() && term())
+			if (term())
 			{
-				// tokitr++; lexitr++;
-				// need to remove this; term() increments for us
 				return true;
 			} else
 				return false;
 			 
 		} else
 		{
-			tokitr++; lexitr++;
 			return true;
 		}
 	}
@@ -432,7 +433,7 @@ bool SyntaxAnalyzer::term(){
     	tokitr++; lexitr++;
     	return true;
     }
-    else if (*tokitr == "s_lparen"){
+    else if (tokitr != tokens.end() && *tokitr == "s_lparen"){
             tokitr++; lexitr++;
             if (expr())
 	    { // David Rudenya -- added open/close brackets

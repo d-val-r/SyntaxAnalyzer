@@ -320,19 +320,16 @@ bool SyntaxAnalyzer::assignstmt()
 	if (tokitr != tokens.end() && *tokitr == "s_assign")
 	{
 		tokitr++; lexitr++;
-		if (tokitr != tokens.end() && *tokitr == "s_assign")
+		if (tokitr != tokens.end() && expr())
 		{
-			tokitr++; lexitr++;
-			if (tokitr != tokens.end() && expr())
+			if (tokitr != tokens.end() && *tokitr == "s_semi")
 			{
-				if (tokitr != tokens.end() && *tokitr == "s_semi")
-				{
-					tokitr++; lexitr++;
-					return true;
-				}
+				tokitr++; lexitr++;
+				return true;
 			}
 		}
 	}
+	
 	return false;
 }
 bool SyntaxAnalyzer::inputstmt(){

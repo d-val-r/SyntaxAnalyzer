@@ -81,7 +81,7 @@ bool SyntaxAnalyzer::parse(){
                 	}
                 	else{
                 		cout << "invalid statement ending code" << endl;
-				cout << *tokitr << endl;
+				cout << *tokitr << endl; // what if the code has no end statement? do we print out the bad value? without making sure not null?
                 }
                 else{
                 	cout << "no end" << endl;
@@ -182,7 +182,8 @@ bool SyntaxAnalyzer::stmtlist(){
     }
 
     if (result == 0)
-        return false;
+	    return false;
+    
     else
         return true;
 }
@@ -240,9 +241,9 @@ bool SyntaxAnalyzer::ifstmt(){
 					if (tokitr != tokens.end() && *tokitr == "t_then")
 					{
 						tokitr++; lexitr++;
-						if (tokitr != tokens.end() && stmtlist())
+						if (stmtlist())
 						{
-							if (tokitr != tokens.end() && elsepart())
+							if (elsepart())
 							// the methods called by elsepart() will increment if necessary; otherwise, if
 							// elsepart() is just empty, don't increment
 							{
@@ -267,8 +268,9 @@ bool SyntaxAnalyzer::ifstmt(){
 	return false;
 }
 
-bool SyntaxAnalyzer::elsepart(){
-    if (*tokitr == "t_else"){
+bool SyntaxAnalyzer::elsepart(){ 
+    // David Rudenya -- added a check to ensure tokitr not null
+    if (tokitr != tokens.end() && *tokitr == "t_else"){
         tokitr++; lexitr++;
         if (stmtlist())
             return true;
@@ -498,7 +500,7 @@ std::istream& SyntaxAnalyzer::getline_safe(std::istream& input, std::string& out
 }
 
 int main(){
-    ifstream infile("output.txt");
+    ifstream infile("output.txt"); // remember to change this to correct file name!
     if (!infile){
     	cout << "error opening lexemes.txt file" << endl;
         exit(-1);

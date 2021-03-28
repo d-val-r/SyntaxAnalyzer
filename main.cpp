@@ -138,8 +138,12 @@ int SyntaxAnalyzer::vars(){
         temp = "t_string";
         tokitr++; lexitr++;
     }
-    else 
-        return 1; // what if we run into non-id terms?
+    // David Rudenya -- rewrote the else clause
+    else if (*tokitr != "t_main")
+	    // if the program runs into a token here that is NOT a valid type
+	    // and is also NOT t_main, then an invalid term (or a valid term
+	    // inserted out of order) has been found; return an error
+        return 2; 
     bool semihit = false;
     while (tokitr != tokens.end() && result == 0 && !semihit){
         if (*tokitr == "t_id"){
@@ -333,11 +337,12 @@ bool SyntaxAnalyzer::assignstmt()
 	return false;
 }
 bool SyntaxAnalyzer::inputstmt(){
-    if (*tokitr == "s_lparen"){
+    // David Rudenya -- added checks to ensure tokitr is not null below
+    if (tokitr != tokens.end() && *tokitr == "s_lparen"){
         tokitr++; lexitr++;
-        if (*tokitr == "t_id"){
+        if (tokitr != tokens.end () && *tokitr == "t_id"){
             tokitr++; lexitr++;
-            if (*tokitr == "s_rparen"){
+            if (tokitr != tokens.end() && *tokitr == "s_rparen"){
                 tokitr++; lexitr++;
                 return true;
             }

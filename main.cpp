@@ -129,21 +129,15 @@ bool SyntaxAnalyzer::vdec(){
 
 int SyntaxAnalyzer::vars(){
     int result = 0;  // 0 - valid, 1 - done, 2 - error
-    string temp;
-    if (*tokitr == "t_integer"){
-        temp = "t_integer";
-        tokitr++; lexitr++;
-    }
-    else if (*tokitr == "t_string"){
-        temp = "t_string";
-        tokitr++; lexitr++;
-    }
-    // David Rudenya -- rewrote the else clause
-    else if (*tokitr != "t_main")
-	    // if the program runs into a token here that is NOT a valid type
-	    // and is also NOT t_main, then an invalid term (or a valid term
-	    // inserted out of order) has been found; return an error
-        return 2; 
+
+    // David Rudenya -- removed the string variable "temp" and combined the
+    // if statements into one
+    if (tokitr != tokens.end() && (*tokitr == "t_integer" || *tokitr == "t_string"))
+    {
+	    tokitr++; lexitr++;
+    } 
+    else
+	    return 1; 
     bool semihit = false;
     while (tokitr != tokens.end() && result == 0 && !semihit){
         if (*tokitr == "t_id"){
@@ -195,13 +189,15 @@ int SyntaxAnalyzer::stmt(){  // returns 1 or 2 if valid, 0 if invalid
 	if (*tokitr == "t_if"){
         tokitr++; lexitr++;
         if (ifstmt()) return 1;
-	else return 0;
+	else 
+		return 0;
 	
     }
     else if (*tokitr == "t_while"){
         tokitr++; lexitr++;
         if (whilestmt()) return 1;
-        else return 0;
+        else 
+		return 0;
     }
     else if (*tokitr == "t_id"){  // assignment starts with identifier
         tokitr++; lexitr++;

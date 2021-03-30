@@ -48,10 +48,13 @@ SyntaxAnalyzer::SyntaxAnalyzer(istream& infile){
     string line, tok, lex;
     int pos;
     getline_safe(infile, line);
-    while(!infile.eof() && line != "\0"){ // valid never updated in this loop?
+    // David Rudenya -- Deleted unused "valid" variable and added a check
+    // to prevent the loop from reading the last empty string in the input
+    // file (the newline after t_end)
+    while(!infile.eof() && line != "\0"){ 
         pos = line.find(":");
         tok = line.substr(0, pos); 
-        lex = line.substr(pos+1, line.length());  // this line is causing issues
+        lex = line.substr(pos+1, line.length());  
         cout << pos << " " << tok << " " << lex << endl;
         tokens.push_back(tok);
         lexemes.push_back(lex);

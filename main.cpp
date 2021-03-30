@@ -48,15 +48,16 @@ SyntaxAnalyzer::SyntaxAnalyzer(istream& infile){
     string line, tok, lex;
     int pos;
     getline_safe(infile, line);
+    cout << "line: " << line << endl;
     bool valid = true;
     while(!infile.eof() && (valid)){ // valid never updated in this loop?
         pos = line.find(":");
-        tok = line.substr(0, pos-1); // changed from pos to pos-1 to account for the space MAKE SURE TO CHANGE THIS BACK
-        lex = line.substr(pos+1, line.length()); // HERE TOO!
+        tok = line.substr(0, pos); 
+        lex = line.substr(pos, line.length()); 
         cout << pos << " " << tok << " " << lex << endl;
         tokens.push_back(tok);
         lexemes.push_back(lex);
-        getline_safe(infile, line);
+	getline_safe(infile, line);
     }
     tokitr = tokens.begin();
     lexitr = lexemes.begin();
@@ -81,7 +82,7 @@ bool SyntaxAnalyzer::parse(){
                 	}
                 	else{
                 		cout << "invalid statement ending code" << endl;
-				cout << *tokitr << endl; // what if the code has no end statement? do we print out the bad value? without making sure not null?
+				cout << *tokitr << endl; 
                 }
                 else{
                 	cout << "no end" << endl;
@@ -189,15 +190,13 @@ int SyntaxAnalyzer::stmt(){  // returns 1 or 2 if valid, 0 if invalid
 	if (*tokitr == "t_if"){
         tokitr++; lexitr++;
         if (ifstmt()) return 1;
-	else 
-		return 0;
+	else return 0;
 	
     }
     else if (*tokitr == "t_while"){
         tokitr++; lexitr++;
         if (whilestmt()) return 1;
-        else 
-		return 0;
+        else return 0;
     }
     else if (*tokitr == "t_id"){  // assignment starts with identifier
         tokitr++; lexitr++;

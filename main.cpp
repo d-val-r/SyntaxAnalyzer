@@ -1,3 +1,9 @@
+/*
+CSCE 306 Program 3 (Dr. St. Clair)
+David Rudenya
+*/
+
+
 #include <cstdlib>
 #include <iostream>
 #include <fstream>
@@ -55,7 +61,6 @@ SyntaxAnalyzer::SyntaxAnalyzer(istream& infile){
         pos = line.find(":");
         tok = line.substr(0, pos); 
         lex = line.substr(pos+1, line.length());  
-        cout << pos << " " << tok << " " << lex << endl;
         tokens.push_back(tok);
         lexemes.push_back(lex);
 	getline_safe(infile, line);
@@ -118,8 +123,8 @@ bool SyntaxAnalyzer::vdec(){
         result = vars();
         if (result == 2)
             return false;
-        while (result == 0){ // maybe include the if in the while condition?
-            if (tokitr!=tokens.end()) // the entirety of this loop might be unnecessary; vars() looks for ALL variables
+	// David Rudenya -- moved if statement into while condition
+        while (result == 0 && tokitr != tokens.end()){ 
                 result = vars(); // parse vars
         }
 

@@ -65,9 +65,9 @@ SyntaxAnalyzer::SyntaxAnalyzer(istream& infile){
         lexemes.push_back(lex);
 	getline_safe(infile, line);
     }
+    
     tokitr = tokens.begin();
     lexitr = lexemes.begin();
-
 }
 
 bool SyntaxAnalyzer::parse(){
@@ -75,7 +75,7 @@ bool SyntaxAnalyzer::parse(){
         if (tokitr!=tokens.end() && *tokitr=="t_main"){ 
             tokitr++; lexitr++;
 	    // David Rudenya -- removed redundant null iterator check
-            if (stmtlist()){ 
+            if (stmtlist()){
             	if (tokitr!=tokens.end()) // should be at end token
                 	if (*tokitr == "t_end"){
                 		tokitr++; lexitr++;

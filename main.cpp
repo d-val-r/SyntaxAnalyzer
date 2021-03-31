@@ -173,17 +173,6 @@ int SyntaxAnalyzer::vars(){
             else if (tokitr != tokens.end() && *tokitr == "s_semi"){
                 semihit = true;
                 tokitr++; lexitr++;
-		
-		// David Rudenya -- updated result to reflect hitting a semicolon
-		// when there is another list of variables to check
-		if (tokitr != tokens.end() && (*tokitr == "t_string" || *tokitr == "t_integer"))
-		{
-			// reset semihit until the next semicolon is encountered
-			semihit = false;
-			tokitr++; lexitr++;
-		}
-		else 
-			result = 1;
             }
             else
                 result = 2;
@@ -237,6 +226,7 @@ int SyntaxAnalyzer::stmt(){  // returns 1 or 2 if valid, 0 if invalid
         tokitr++; lexitr++;
         if (outputstmt()) return 1;
 	else return 0;
+	
     }
     return 2;  //stmtlist can be null
 }

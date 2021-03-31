@@ -74,10 +74,26 @@ bool SyntaxAnalyzer::parse(){
             tokitr++; lexitr++;
 	    // David Rudenya -- removed redundant null iterator check
             if (stmtlist()){
-            	if (tokitr!=tokens.end()) // should be at end token
+
+		// David Rudenya -- added a check below to see if tokitr  has hit
+		// the "\0", which should be the very last line; if either of the
+		// below conditions are false, then end was not found before
+		// hitting either the end of the file or finding the empty line
+		// that shouid have come after end; also added braces to ensure
+		// that, if the below if-statement is false, it lines up
+		// with the else clause printing "no end"
+            	if (tokitr!=tokens.end() && *tokitr != "\0") // should be at end token
+		{
                 	if (*tokitr == "t_end"){
                 		tokitr++; lexitr++;
 				// David Rudenya -- reformated the below if-statement
+				// to see if the empty line has been found (which
+				// should come immediately after end and is the
+				// last line in the file) instead of checking
+				// if the tokitr has reached tokens.end(); this
+				// prevents the program from reading the empty
+				// line that comes after end in the input as
+				// a statement after end
 				if (tokitr != tokens.end() && *tokitr == "\0") // end was the last thing in file
 				{
 					cout << "Valid source code file" << endl;
@@ -90,7 +106,8 @@ bool SyntaxAnalyzer::parse(){
                 	}
                 	else{
                 		cout << "invalid statement ending code" << endl;
-                }
+                	}
+		}
                 else{
                 	cout << "no end" << endl;
                 }
@@ -138,7 +155,7 @@ bool SyntaxAnalyzer::vdec(){
 int SyntaxAnalyzer::vars(){
     int result = 0;  // 0 - valid, 1 - done, 2 - error
 
-    // David Rudenya -- removed the string variable "temp" and combined the
+    // David Rudenya -- removed the unused string variable "temp" and combined the
     // if statements into one
     if (tokitr != tokens.end() && (*tokitr == "t_integer" || *tokitr == "t_string"))
     {
@@ -158,9 +175,10 @@ int SyntaxAnalyzer::vars(){
                 tokitr++; lexitr++;
 		
 		// David Rudenya -- updated result to reflect hitting a semicolon
-		// and when there is another list of variables to check
+		// when there is another list of variables to check
 		if (tokitr != tokens.end() && (*tokitr == "t_string" || *tokitr == "t_integer"))
 		{
+			// reset semihit until the next semicolon is encountered
 			semihit = false;
 			tokitr++; lexitr++;
 		}
@@ -245,7 +263,7 @@ bool SyntaxAnalyzer::ifstmt(){
 						{
 							if (elsepart())
 							// the methods called by elsepart() will increment if necessary; otherwise, if
-							// elsepart() is just empty, don't increment
+							// elsepart is empty in the input file, won't increment
 							{
 								if (tokitr != tokens.end() && *tokitr == "t_end")
 								{
@@ -355,7 +373,8 @@ bool SyntaxAnalyzer::inputstmt(){
 
 bool SyntaxAnalyzer::outputstmt()
 	// pre: none
-	// post: the source code has been checked for a valid output statement
+	// post: the source code has been checked for a valid output statement;
+	//       returns true if valid, false if not
 	// desc: written by David Rudenya; assumes the output statement is
 	//       invalid unless it passes all tests to be valid
 {
@@ -368,7 +387,6 @@ bool SyntaxAnalyzer::outputstmt()
 			{
 				tokitr++; lexitr++; 
 			} 
-			// expr() updates the tokitr/lexitr, but if it returns false, immediately exit the function
 			else if (!expr()) 
 				return false;
 
@@ -406,6 +424,7 @@ bool SyntaxAnalyzer::expr(){
 bool SyntaxAnalyzer::simpleexpr()
 	// pre: none
 	// post: source code has been checked for a valid simple expression
+	//       returns true if valid, false if not
 	// desc: written by David Rudenya; assumes the expression is invalid
 	//       unless it passes all tests to be considered valid
 {
@@ -440,7 +459,7 @@ bool SyntaxAnalyzer::term(){
     else if (tokitr != tokens.end() && *tokitr == "s_lparen"){
             tokitr++; lexitr++;
             if (expr())
-	    { // David Rudenya -- added open/close brackets
+	    { // David Rudenya -- added open/close braces
                 if (*tokitr == "s_rparen"){
                     tokitr++; lexitr++;
                     return true;
@@ -489,7 +508,7 @@ std::istream& SyntaxAnalyzer::getline_safe(std::istream& input, std::string& out
     input.get(c);
     while (input && c != '\n')
     {
-        if (c != '\r' || input.peek() != '\n') // should probably be &&, not ||
+        if (c != '\r' || input.peek() != '\n') 
         {
             output += c;
         }

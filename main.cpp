@@ -129,8 +129,12 @@ bool SyntaxAnalyzer::parse(){
 
 bool SyntaxAnalyzer::vdec(){
     // David Rudenya - added a check to ensure that tokitr is not null
+    // If the tokitr is null at this stage, that means an empty input file was fed
+    // in; instead of declaring a bad var list, this returns true and lets
+    // the parse method handle determining that the issue is the lack of 
+    // the keyword main, since the vdec is techincally empty, which is allowed
     if (tokitr == tokens.end())
-	    return false;
+	    return true;
 
     if (*tokitr != "t_var") // vdec can be null
         return true; 

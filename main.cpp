@@ -54,10 +54,8 @@ SyntaxAnalyzer::SyntaxAnalyzer(istream& infile){
     string line, tok, lex;
     int pos;
     getline_safe(infile, line);
-    // David Rudenya -- Deleted unused "valid" variable and added a check
-    // to prevent the loop from reading the last empty string in the input
-    // file (the newline after t_end)
-    while(!infile.eof() && line != "\0"){ 
+    // David Rudenya -- Deleted unused "valid" variable
+    while(!infile.eof()){ 
         pos = line.find(":");
         tok = line.substr(0, pos); 
         lex = line.substr(pos+1, line.length());  
@@ -79,17 +77,19 @@ bool SyntaxAnalyzer::parse(){
             	if (tokitr!=tokens.end()) // should be at end token
                 	if (*tokitr == "t_end"){
                 		tokitr++; lexitr++;
-                		if (tokitr==tokens.end()){  // end was last thing in file
-                			cout << "Valid source code file" << endl;
-                			return true;
-                		}
-                		else{
-                			cout << "end came too early" << endl;
-                		}
+				// David Rudenya -- reformated the below if-statement
+				if (tokitr != tokens.end() && *tokitr == "\0") // end was the last thing in file
+				{
+					cout << "Valid source code file" << endl;
+					return true;
+
+				} 
+				else{
+					cout << "end came too early" << endl;
+				}
                 	}
                 	else{
                 		cout << "invalid statement ending code" << endl;
-				cout << *tokitr << endl; 
                 }
                 else{
                 	cout << "no end" << endl;
@@ -207,7 +207,6 @@ int SyntaxAnalyzer::stmt(){  // returns 1 or 2 if valid, 0 if invalid
     }
     else if (*tokitr == "t_id"){  // assignment starts with identifier
         tokitr++; lexitr++;
-        cout << "t_id" << endl;
         if (assignstmt()) return 1;
         else return 0;
     }
@@ -218,7 +217,6 @@ int SyntaxAnalyzer::stmt(){  // returns 1 or 2 if valid, 0 if invalid
     }
     else if (*tokitr == "t_output"){
         tokitr++; lexitr++;
-        cout << "t_output" << endl;
         if (outputstmt()) return 1;
 	else return 0;
     }
